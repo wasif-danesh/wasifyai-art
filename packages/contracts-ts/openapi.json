@@ -1,0 +1,1618 @@
+{
+  "components": {
+    "schemas": {
+      "CreationList": {
+        "properties": {
+          "creations": {
+            "items": {
+              "$ref": "#/components/schemas/CreationSummary"
+            },
+            "title": "Creations",
+            "type": "array"
+          }
+        },
+        "required": [
+          "creations"
+        ],
+        "title": "CreationList",
+        "type": "object"
+      },
+      "CreationModelRef": {
+        "properties": {
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "header_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Header Sha256"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rel_path": {
+            "title": "Rel Path",
+            "type": "string"
+          },
+          "role": {
+            "default": "base",
+            "enum": [
+              "base",
+              "lora"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "version_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Id"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "required": [
+          "version_id",
+          "role",
+          "weight",
+          "name",
+          "family",
+          "rel_path",
+          "header_sha256"
+        ],
+        "title": "CreationModelRef",
+        "type": "object"
+      },
+      "CreationSummary": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "height": {
+            "title": "Height",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "image_url": {
+            "title": "Image Url",
+            "type": "string"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/CreationModelRef"
+            },
+            "title": "Models",
+            "type": "array"
+          },
+          "params": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Params",
+            "type": "object"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "provider_id": {
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "thumb_url": {
+            "title": "Thumb Url",
+            "type": "string"
+          },
+          "width": {
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "prompt",
+          "width",
+          "height",
+          "provider_id",
+          "created_at",
+          "parent_id",
+          "image_url",
+          "thumb_url",
+          "params",
+          "models"
+        ],
+        "title": "CreationSummary",
+        "type": "object"
+      },
+      "FamilyInfo": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "FamilyInfo",
+        "type": "object"
+      },
+      "FamilyList": {
+        "properties": {
+          "families": {
+            "items": {
+              "$ref": "#/components/schemas/FamilyInfo"
+            },
+            "title": "Families",
+            "type": "array"
+          }
+        },
+        "required": [
+          "families"
+        ],
+        "title": "FamilyList",
+        "type": "object"
+      },
+      "GenerationRequest": {
+        "description": "`text`: a prompt and a size. `edit`: one of the caller's own creations plus an instruction\n(image to image). `parent_id` records the creation this one is a remix of.",
+        "properties": {
+          "loras": {
+            "items": {
+              "$ref": "#/components/schemas/LoraUse"
+            },
+            "maxItems": 10,
+            "title": "Loras",
+            "type": "array"
+          },
+          "mode": {
+            "default": "text",
+            "enum": [
+              "text",
+              "edit"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "prompt": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "provider_id": {
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 2147483648.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "size": {
+            "default": "square",
+            "enum": [
+              "square",
+              "landscape",
+              "portrait",
+              "wide",
+              "tall"
+            ],
+            "title": "Size",
+            "type": "string"
+          },
+          "source_creation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Creation Id"
+          },
+          "source_upload_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Upload Id"
+          },
+          "version_id": {
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider_id",
+          "version_id",
+          "prompt"
+        ],
+        "title": "GenerationRequest",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Health": {
+        "properties": {
+          "product": {
+            "title": "Product",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "product"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
+      "JobList": {
+        "properties": {
+          "jobs": {
+            "items": {
+              "$ref": "#/components/schemas/JobSummary"
+            },
+            "title": "Jobs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "jobs"
+        ],
+        "title": "JobList",
+        "type": "object"
+      },
+      "JobSummary": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "creation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creation Id"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "progress",
+          "prompt",
+          "mode",
+          "model_name",
+          "error",
+          "creation_id",
+          "created_at"
+        ],
+        "title": "JobSummary",
+        "type": "object"
+      },
+      "LoraUse": {
+        "properties": {
+          "version_id": {
+            "title": "Version Id",
+            "type": "string"
+          },
+          "weight": {
+            "default": 1.0,
+            "maximum": 3.0,
+            "minimum": -2.0,
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "version_id"
+        ],
+        "title": "LoraUse",
+        "type": "object"
+      },
+      "ModelFileSummary": {
+        "properties": {
+          "folder": {
+            "title": "Folder",
+            "type": "string"
+          },
+          "rel_path": {
+            "title": "Rel Path",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "present",
+              "missing"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rel_path",
+          "folder",
+          "size_bytes",
+          "status"
+        ],
+        "title": "ModelFileSummary",
+        "type": "object"
+      },
+      "ModelList": {
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelSummary"
+            },
+            "title": "Models",
+            "type": "array"
+          }
+        },
+        "required": [
+          "models"
+        ],
+        "title": "ModelList",
+        "type": "object"
+      },
+      "ModelSummary": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "checkpoint",
+              "lora"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ModelVersionSummary"
+            },
+            "title": "Versions",
+            "type": "array"
+          },
+          "visibility": {
+            "default": "private",
+            "enum": [
+              "private",
+              "unlisted",
+              "public"
+            ],
+            "title": "Visibility",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "slug",
+          "tags",
+          "visibility",
+          "versions"
+        ],
+        "title": "ModelSummary",
+        "type": "object"
+      },
+      "ModelVersionSummary": {
+        "properties": {
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "family_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family Hint"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ModelFileSummary"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "unconfirmed",
+              "ready",
+              "missing",
+              "disabled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "trigger_hints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trigger Hints",
+            "type": "array"
+          },
+          "trigger_words": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Trigger Words",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "family",
+          "status",
+          "trigger_words",
+          "family_hint",
+          "trigger_hints",
+          "files"
+        ],
+        "title": "ModelVersionSummary",
+        "type": "object"
+      },
+      "ProviderCapabilities": {
+        "description": "What a provider can do; the editor shows only controls the chosen provider supports.",
+        "properties": {
+          "edit": {
+            "default": false,
+            "title": "Edit",
+            "type": "boolean"
+          },
+          "img2img": {
+            "default": false,
+            "title": "Img2Img",
+            "type": "boolean"
+          },
+          "lora_stack_max": {
+            "default": 0,
+            "title": "Lora Stack Max",
+            "type": "integer"
+          },
+          "loras": {
+            "default": false,
+            "title": "Loras",
+            "type": "boolean"
+          },
+          "negative_prompt": {
+            "default": false,
+            "title": "Negative Prompt",
+            "type": "boolean"
+          },
+          "text2img": {
+            "default": true,
+            "title": "Text2Img",
+            "type": "boolean"
+          },
+          "video": {
+            "default": false,
+            "title": "Video",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "text2img",
+          "img2img",
+          "edit",
+          "video",
+          "loras",
+          "lora_stack_max",
+          "negative_prompt"
+        ],
+        "title": "ProviderCapabilities",
+        "type": "object"
+      },
+      "ProviderInfo": {
+        "properties": {
+          "capabilities": {
+            "$ref": "#/components/schemas/ProviderCapabilities"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "configured",
+              "unconfigured"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "status",
+          "capabilities"
+        ],
+        "title": "ProviderInfo",
+        "type": "object"
+      },
+      "ProviderList": {
+        "properties": {
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderInfo"
+            },
+            "title": "Providers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "providers"
+        ],
+        "title": "ProviderList",
+        "type": "object"
+      },
+      "ScanProblem": {
+        "properties": {
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "rel_path": {
+            "title": "Rel Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rel_path",
+          "reason"
+        ],
+        "title": "ScanProblem",
+        "type": "object"
+      },
+      "ScanResult": {
+        "properties": {
+          "added": {
+            "default": 0,
+            "title": "Added",
+            "type": "integer"
+          },
+          "missing": {
+            "default": 0,
+            "title": "Missing",
+            "type": "integer"
+          },
+          "problems": {
+            "items": {
+              "$ref": "#/components/schemas/ScanProblem"
+            },
+            "title": "Problems",
+            "type": "array"
+          },
+          "restored": {
+            "default": 0,
+            "title": "Restored",
+            "type": "integer"
+          },
+          "skipped_unsupported": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Skipped Unsupported",
+            "type": "array"
+          },
+          "unchanged": {
+            "default": 0,
+            "title": "Unchanged",
+            "type": "integer"
+          },
+          "updated": {
+            "default": 0,
+            "title": "Updated",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "added",
+          "updated",
+          "missing",
+          "restored",
+          "unchanged",
+          "skipped_unsupported",
+          "problems"
+        ],
+        "title": "ScanResult",
+        "type": "object"
+      },
+      "UploadSummary": {
+        "properties": {
+          "bytes": {
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "height": {
+            "title": "Height",
+            "type": "integer"
+          },
+          "upload_id": {
+            "title": "Upload Id",
+            "type": "string"
+          },
+          "width": {
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "upload_id",
+          "width",
+          "height",
+          "bytes"
+        ],
+        "title": "UploadSummary",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VersionUpdate": {
+        "description": "Owner's confirmation of a version. `ready` needs a family.",
+        "properties": {
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unconfirmed",
+                  "ready",
+                  "disabled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "trigger_words": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trigger Words"
+          }
+        },
+        "title": "VersionUpdate",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "wasifyai-art API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/v1/creations": {
+      "get": {
+        "operationId": "list_creations_v1_creations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 48,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreationList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Creations",
+        "tags": [
+          "creations"
+        ]
+      }
+    },
+    "/v1/creations/{creation_id}": {
+      "delete": {
+        "description": "Files first, then the record.",
+        "operationId": "delete_creation_v1_creations__creation_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "creation_id",
+            "required": true,
+            "schema": {
+              "title": "Creation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Creation",
+        "tags": [
+          "creations"
+        ]
+      },
+      "get": {
+        "operationId": "get_creation_v1_creations__creation_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "creation_id",
+            "required": true,
+            "schema": {
+              "title": "Creation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreationSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Creation",
+        "tags": [
+          "creations"
+        ]
+      }
+    },
+    "/v1/creations/{creation_id}/image": {
+      "get": {
+        "operationId": "creation_image_v1_creations__creation_id__image_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "creation_id",
+            "required": true,
+            "schema": {
+              "title": "Creation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Creation Image",
+        "tags": [
+          "creations"
+        ]
+      }
+    },
+    "/v1/creations/{creation_id}/thumb": {
+      "get": {
+        "operationId": "creation_thumb_v1_creations__creation_id__thumb_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "creation_id",
+            "required": true,
+            "schema": {
+              "title": "Creation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Creation Thumb",
+        "tags": [
+          "creations"
+        ]
+      }
+    },
+    "/v1/families": {
+      "get": {
+        "operationId": "list_families_v1_families_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Families",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/generations": {
+      "post": {
+        "description": "Validate and resolve the request, store a job and queue it. Never awaits GPU work.",
+        "operationId": "create_generation_v1_generations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Generation",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/jobs": {
+      "get": {
+        "operationId": "list_jobs_v1_jobs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Jobs",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "get_job_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "description": "A queued job is canceled at once; a running one is asked to stop (it ends as `canceled`).",
+        "operationId": "cancel_job_v1_jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Job",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/jobs/{job_id}/events": {
+      "get": {
+        "description": "Server-sent events for one job. `Last-Event-ID` resumes after a dropped connection.",
+        "operationId": "job_events_v1_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Events",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/jobs/{job_id}/retry": {
+      "post": {
+        "description": "Run a failed or canceled job again with the same resolved request, as a new job.",
+        "operationId": "retry_job_v1_jobs__job_id__retry_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retry Job",
+        "tags": [
+          "generation"
+        ]
+      }
+    },
+    "/v1/model-versions/{version_id}": {
+      "patch": {
+        "operationId": "update_version_v1_model_versions__version_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelVersionSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Version",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "operationId": "list_models_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/scan": {
+      "post": {
+        "description": "Read the model folders' `.safetensors` headers and reconcile them with the registry.",
+        "operationId": "scan_models_v1_models_scan_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Scan Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/providers": {
+      "get": {
+        "operationId": "list_providers_v1_providers_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Providers",
+        "tags": [
+          "providers"
+        ]
+      }
+    },
+    "/v1/uploads/images": {
+      "post": {
+        "description": "The raw picture is the request body.\n\nIt is re-encoded, stripped of metadata and stored under the caller's own prefix; only an\n`upload_id` is returned.",
+        "operationId": "upload_image_v1_uploads_images_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Upload Image",
+        "tags": [
+          "uploads"
+        ]
+      }
+    },
+    "/v1/uploads/{upload_id}": {
+      "delete": {
+        "operationId": "delete_upload_v1_uploads__upload_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "upload_id",
+            "required": true,
+            "schema": {
+              "title": "Upload Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Upload",
+        "tags": [
+          "uploads"
+        ]
+      }
+    }
+  }
+}

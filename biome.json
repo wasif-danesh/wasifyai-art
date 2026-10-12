@@ -1,0 +1,17 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "formatter": { "indentStyle": "space", "lineWidth": 100 },
+  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "files": {
+    "ignore": [
+      ".venv",
+      ".turbo",
+      "*.gen.ts",
+      "openapi.json",
+      ".next",
+      "node_modules",
+      "dist",
+      "docs"
+    ]
+  }
+}

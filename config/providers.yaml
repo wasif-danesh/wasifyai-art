@@ -1,0 +1,15 @@
+# Providers: where generation runs (docs/DESIGN.md section 3). Config only; adapters live in the worker.
+# `url_env` names the environment variable that holds the address; the provider is `configured` when it is set.
+providers:
+  - id: comfyui-local
+    kind: comfyui
+    title: Local ComfyUI
+    url_env: COMFYUI_BASE_URL
+    capabilities:
+      text2img: true
+      img2img: true
+      edit: true
+      video: false
+      loras: true
+      lora_stack_max: 5
+      negative_prompt: true

@@ -1,0 +1,23 @@
+# Image to image on FLUX.2 klein 4B: one reference picture and an instruction. The picture is scaled to
+# about one megapixel inside the graph, so the result keeps its shape and there is no size input.
+workflow: flux2-klein-4b-edit.json
+capability: edit
+families: [flux2-klein]
+licence: "Owner records licence terms; klein 4B is Apache-2.0 per its model card (verify)."
+models:
+  - text_encoders/qwen_3_4b.safetensors
+  - vae/flux2-vae.safetensors
+inputs:
+  model:  { node: "1",  field: unet_name }
+  prompt: { node: "4",  field: text }
+  seed:   { node: "15", field: noise_seed }
+  steps:  { node: "10", field: steps }
+  image:  { node: "6",  field: image }   # the worker uploads the source and fills this reference
+outputs:
+  image: { node: "19", type: image }
+lora_chain:                  # LoRAs are spliced between the model loader and the sampler
+  loader: LoraLoaderModelOnly
+  max: 5
+  from: { node: "1", output: 0 }
+  to:
+    - { node: "16", field: model }

@@ -1,0 +1,6 @@
+.venv
+node_modules
+.next
+.turbo
+.git
+data

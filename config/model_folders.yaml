@@ -1,0 +1,7 @@
+# Sub-folders of MODELS_DIR (the ComfyUI `models` folder) the hub reads, and the kind each holds.
+# Text encoders, VAEs and similar support files are not hub models and are not listed.
+folders:
+  loras: lora
+  checkpoints: checkpoint
+  diffusion_models: checkpoint
+  unet: checkpoint

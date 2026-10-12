@@ -1,0 +1,25 @@
+# Base families. A LoRA only works with the family it was trained for, so a version becomes `ready`
+# only after the owner confirms one. `match` strings are tried (lower case, first family wins) against the
+# file's own metadata and file name to *suggest* a family; they never decide it.
+families:
+  - id: flux2-klein
+    title: "FLUX.2 klein"
+    match: [flux2-klein, flux-2-klein, flux_2_klein, klein]
+    # Text to image defaults for this family (distilled: few steps, no negative prompt). Sizes are
+    # multiples of 16 and about one megapixel.
+    generation:
+      steps: 4
+      edit_steps: 4
+      sizes:
+        square: [1024, 1024]
+        landscape: [1152, 864]
+        portrait: [864, 1152]
+        wide: [1344, 768]
+        tall: [768, 1344]
+  - { id: z-image, title: "Z-Image", match: [z-image, z_image, zimage] }
+  - { id: qwen-image, title: "Qwen Image", match: [qwen-image, qwen_image, qwen image] }
+  - { id: flux1, title: "FLUX.1", match: [flux-1, flux1, flux.1, flux_1] }
+  - { id: illustrious, title: "Illustrious", match: [illustrious] }
+  - { id: sdxl, title: "Stable Diffusion XL", match: [sdxl, stable-diffusion-xl, sd_xl] }
+  - { id: sd15, title: "Stable Diffusion 1.5", match: [sd_v1, sd-v1, stable-diffusion-v1, sd15] }
+  - { id: other, title: "Other", match: [] }

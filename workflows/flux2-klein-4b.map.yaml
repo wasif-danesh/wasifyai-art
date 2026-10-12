@@ -1,0 +1,27 @@
+# Text to image on FLUX.2 klein 4B. Same API-format JSON and map format as wasifyai; only this file knows node IDs.
+workflow: flux2-klein-4b.json
+capability: text2img
+families: [flux2-klein]
+licence: "Owner records licence terms; klein 4B is Apache-2.0 per its model card (verify)."
+models:                      # support files the ComfyUI host must have
+  - text_encoders/qwen_3_4b.safetensors
+  - vae/flux2-vae.safetensors
+inputs:
+  model:   { node: "1", field: unet_name }   # filled from the chosen model version's file
+  prompt:  { node: "4", field: text }
+  seed:    { node: "9", field: noise_seed }
+  steps:   { node: "7", field: steps }
+  width:
+    - { node: "6", field: width }
+    - { node: "7", field: width }
+  height:
+    - { node: "6", field: height }
+    - { node: "7", field: height }
+outputs:
+  image: { node: "13", type: image }
+lora_chain:                  # LoRAs are spliced between the model loader and the sampler
+  loader: LoraLoaderModelOnly
+  max: 5
+  from: { node: "1", output: 0 }
+  to:
+    - { node: "10", field: model }

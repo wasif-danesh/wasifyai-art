@@ -1,0 +1,33 @@
+{
+  "model": "flux2-klein-base-4b",
+  "data": "__DATA__",
+  "seed": 42,
+  "steps": 40,
+  "guidance": 1.0,
+  "quantize": 8,
+  "low_ram": false,
+  "gradient_checkpointing": true,
+  "max_resolution": 768,
+  "training_loop": { "num_epochs": 20, "batch_size": 1, "timestep_low": 25, "timestep_high": 40 },
+  "optimizer": { "name": "AdamW", "learning_rate": 1e-4 },
+  "checkpoint": { "output_path": "__OUT__", "save_frequency": 100 },
+  "monitoring": { "plot_frequency": 20, "generate_image_frequency": 100 },
+  "lora_layers": {
+    "targets": [
+      { "module_path": "transformer_blocks.{block}.attn.to_q", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.to_k", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.to_v", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.to_out", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.add_q_proj", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.add_k_proj", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.add_v_proj", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.attn.to_add_out", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.ff.linear_in", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.ff.linear_out", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.ff_context.linear_in", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "transformer_blocks.{block}.ff_context.linear_out", "blocks": { "start": 0, "end": 5 }, "rank": 16 },
+      { "module_path": "single_transformer_blocks.{block}.attn.to_qkv_mlp_proj", "blocks": { "start": 0, "end": 20 }, "rank": 16 },
+      { "module_path": "single_transformer_blocks.{block}.attn.to_out", "blocks": { "start": 0, "end": 20 }, "rank": 16 }
+    ]
+  }
+}
