@@ -17,4 +17,8 @@ fi
 mkdir -p "$OUT"
 sed -e "s|__DATA__|$REPO/data/spikes/pipbot|" -e "s|__OUT__|$OUT|" "$HERE/train_klein_base_4b.json" > "$OUT/train.json"
 echo "config: $OUT/train.json"
+# The Hugging Face "xet" transfer backend stalled to ~0 KB/s on the dev connection (measured); the plain
+# HTTP path ran at ~9 MB/s. Resumable either way.
+export HF_HUB_DISABLE_XET=1 HF_HUB_DOWNLOAD_TIMEOUT=120
+# mflux writes to a timestamped sibling folder: "$OUT_<date>_<time>/{checkpoints,preview,loss}"
 exec "$VENV/bin/mflux-train" --config "$OUT/train.json"

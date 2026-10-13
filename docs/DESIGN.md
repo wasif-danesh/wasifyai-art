@@ -122,11 +122,12 @@ Wizard: **Images → Captions → Settings → Train → Results/Publish.**
   be reached from containers); CUDA container later. One GPU: training blocks generation, and the UI says so.
 - **Publish:** pick an epoch → file copied into the provider's LoRA folder → model version created → `ready` once
   the provider lists it.
-- **Engine (spike, 2026-10-12):** **mflux** (MLX) trains FLUX.2 klein base 4B/9B on Apple silicon, with the
-  dataset layouts the requirements ask for (image+text, and edit `NN_in/NN_out`), checkpoints, resume, loss plots and
-  previews. Not yet run: the base weights are a ~15 GB download. Open risks: convergence and speed on this Mac,
-  transfer from the base to the distilled 4-step model, and **ComfyUI key mapping** for mflux's FLUX.2 LoRA
-  names (probably a conversion step in the trainer). Details: `docs/spikes/training/README.md`.
+- **Engine (spike, run 2026-10-13):** **mflux** (MLX) trains FLUX.2 klein base 4B on the dev Mac: about 7-8 s per
+  step, 300 steps in under 40 minutes, no memory trouble. It writes a plain LoRA `adapter.safetensors`, which loads
+  on the **distilled** klein in ComfyUI and changes the output; one key group needs a small rename
+  (`convert_mflux_lora.py`, to live in the trainer). Dataset layouts cover both "Image model" and "Edit image".
+  Not yet shown: that the trigger word binds (needs a longer, tuned run). Download: use `HF_HUB_DISABLE_XET=1` on
+  slow links. Details and pictures: `docs/spikes/training/README.md`.
 
 ---
 
