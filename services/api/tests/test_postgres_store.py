@@ -123,3 +123,59 @@ async def test_lora_refs_round_trip_with_role_and_weight() -> None:
     finally:
         await store.delete_creation("local", user, cid)
         await engine.dispose()
+
+
+def test_dataset_and_training_run_against_postgres(tmp_path: Path) -> None:
+    user = f"it-train-{os.getpid()}"
+    import asyncio  # noqa: PLC0415
+
+    from sqlalchemy import text  # noqa: PLC0415
+    from sqlalchemy.ext.asyncio import create_async_engine  # noqa: PLC0415
+
+    async def clean() -> None:
+        engine = create_async_engine(Settings().database_url)
+        async with engine.begin() as conn:
+            for table in ("training_runs", "datasets"):
+                await conn.execute(text(f"DELETE FROM {table} WHERE owner_id = :o"), {"o": user})
+            await conn.execute(text("DELETE FROM jobs WHERE owner_id = :o"), {"o": user})
+        await engine.dispose()
+
+    asyncio.run(clean())
+    settings = Settings(
+        providers_file=PROVIDERS, families_file=FAMILIES, model_folders_file=FOLDERS,
+        models_dir=tmp_path / "models", data_dir=tmp_path / "data", stub_user_id=user,
+        trainer_mode="stub",
+    )  # fmt: skip
+    from io import BytesIO  # noqa: PLC0415
+
+    from PIL import Image  # noqa: PLC0415
+
+    def png(shade: int) -> bytes:
+        buf = BytesIO()
+        Image.new("RGB", (64, 64), (shade, 60, 90)).save(buf, "PNG")
+        return buf.getvalue()
+
+    try:
+        with TestClient(create_app(settings)) as c:
+            d = c.post("/v1/datasets", json={"name": "pg set", "trigger_word": "pgtrig"}).json()
+            for i in range(5):
+                r = c.post(
+                    f"/v1/datasets/{d['id']}/images", content=png(40 * i),
+                    headers={"content-type": "image/png"},
+                )  # fmt: skip
+                assert r.status_code == 201, r.text
+            got = c.get(f"/v1/datasets/{d['id']}").json()
+            assert got["image_count"] == 5
+            assert all(i["caption"] == "pgtrig" for i in got["images"])
+            first = got["images"][0]["id"]
+            r = c.patch(
+                f"/v1/datasets/{d['id']}/images/{first}", json={"caption": "pgtrig on a table"}
+            )
+            assert r.status_code == 200
+            run = c.post("/v1/trainings", json={"dataset_id": d["id"], "epochs": 2}).json()
+            assert run["steps"] == 10
+            assert run["created_at"]
+            assert [t["id"] for t in c.get("/v1/trainings").json()["trainings"]] == [run["id"]]
+            assert c.delete(f"/v1/datasets/{d['id']}").status_code == 204
+    finally:
+        asyncio.run(clean())

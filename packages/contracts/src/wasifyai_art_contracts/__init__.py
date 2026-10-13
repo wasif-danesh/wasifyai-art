@@ -199,3 +199,73 @@ class UploadSummary(Out):
     width: int
     height: int
     bytes: int
+
+
+TrainingPreset = Literal["fast", "balanced", "quality"]
+
+
+class DatasetCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    trigger_word: str = Field(min_length=2, max_length=40, pattern=r"^[A-Za-z0-9_\-]+$")
+
+
+class CaptionUpdate(BaseModel):
+    caption: str = Field(max_length=1000)
+
+
+class DatasetImageSummary(Out):
+    id: str
+    width: int
+    height: int
+    caption: str
+    has_trigger: bool
+    thumb_url: str
+
+
+class DatasetSummary(Out):
+    id: str
+    name: str
+    trigger_word: str
+    image_count: int
+    created_at: str
+    images: list[DatasetImageSummary] = Field(default_factory=list)
+
+
+class DatasetList(Out):
+    datasets: list[DatasetSummary]
+
+
+class TrainingRequest(BaseModel):
+    dataset_id: str
+    preset: TrainingPreset = "fast"
+    epochs: int | None = Field(default=None, ge=1, le=300)
+
+
+class CheckpointInfo(Out):
+    step: int
+    size_bytes: int
+    preview_url: str | None
+
+
+class TrainingSummary(Out):
+    id: str
+    dataset_id: str
+    dataset_name: str
+    trigger_word: str
+    status: JobStatus
+    progress: float
+    error: str | None
+    preset: str
+    steps: int
+    image_count: int
+    created_at: str
+    checkpoints: list[CheckpointInfo]
+
+
+class TrainingList(Out):
+    trainings: list[TrainingSummary]
+
+
+class PublishRequest(BaseModel):
+    step: int = Field(ge=1)
+    name: str | None = Field(default=None, max_length=80)

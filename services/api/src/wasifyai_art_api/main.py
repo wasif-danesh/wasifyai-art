@@ -13,11 +13,18 @@ from wasifyai_art_api.limits import InMemoryLimiter, RateLimiter, RedisLimiter
 from wasifyai_art_api.providers import load_providers
 from wasifyai_art_api.routes import router
 from wasifyai_art_api.routes_generation import router as generation_router
+from wasifyai_art_api.routes_training import router as training_router
 from wasifyai_art_api.routes_uploads import router as uploads_router
 from wasifyai_art_api.scanner import load_folder_map
 from wasifyai_art_api.settings import Settings, get_settings
 from wasifyai_art_api.storage import InMemoryStorage, Storage, make_storage
 from wasifyai_art_api.store import InMemoryModelStore, ModelStore, PostgresModelStore
+from wasifyai_art_api.training import (
+    InMemoryTrainingStore,
+    PostgresTrainingStore,
+    TrainingStore,
+    load_training,
+)
 from wasifyai_art_api.uploads import (
     InMemoryUploadStore,
     PostgresUploadStore,
@@ -35,6 +42,7 @@ def create_app(
     storage: Storage | None = None,
     uploads: UploadStore | None = None,
     limiter: RateLimiter | None = None,
+    training: TrainingStore | None = None,
 ) -> FastAPI:
     """Production wiring when no parts are given; tests pass in-memory parts."""
     settings = settings or get_settings()
@@ -73,6 +81,7 @@ def create_app(
         storage = storage or make_storage(settings)
         uploads = uploads or PostgresUploadStore(engine)
         limiter = limiter or RedisLimiter(redis)
+        training = training or PostgresTrainingStore(engine)
     app.state.store = store or InMemoryModelStore()
     app.state.jobs = jobs or InMemoryJobStore()
     app.state.bus = bus or InMemoryBus()
@@ -80,7 +89,10 @@ def create_app(
     app.include_router(router)
     app.state.uploads = uploads or InMemoryUploadStore()
     app.state.limiter = limiter or InMemoryLimiter()
+    app.state.training = training or InMemoryTrainingStore()
+    app.state.training_cfg = load_training(settings.training_file)
     app.include_router(generation_router)
+    app.include_router(training_router)
     app.include_router(uploads_router)
     return app
 

@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     lora_weight_min: float = -1.0
     lora_weight_max: float = 2.0
     job_timeout_s: float = 1200.0
+    # Training. TRAINER_MODE=stub simulates a run (tiny adapter, placeholders); real runs mflux.
+    trainer_mode: str = "stub"
+    training_file: Path = REPO_ROOT / "config" / "training.yaml"
+    mflux_bin: Path = Path.home() / ".cache" / "wasifyai-art" / "mflux-env" / "bin" / "mflux-train"
+    train_timeout_s: float = 4 * 3600.0
+    dataset_upload_per_hour: int = 500
     storage_backend: str = "local"  # local | s3
     data_dir: Path = REPO_ROOT / "data"
     storage_endpoint: str = "http://localhost:8334"

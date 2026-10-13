@@ -17,7 +17,7 @@ def ready_klein(c: TestClient) -> str:
     return vid
 
 
-def processor(parts, runner=None) -> JobProcessor:
+def processor(parts, runner=None, trainer=None) -> JobProcessor:
     return JobProcessor(
         parts["jobs"],
         parts["storage"],
@@ -26,6 +26,8 @@ def processor(parts, runner=None) -> JobProcessor:
         NullLock(),
         5.0,
         parts["uploads"],
+        trainer=trainer,
+        training=parts["training"],
     )
 
 

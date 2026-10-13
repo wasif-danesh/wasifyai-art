@@ -1,6 +1,50 @@
 {
   "components": {
     "schemas": {
+      "CaptionUpdate": {
+        "properties": {
+          "caption": {
+            "maxLength": 1000,
+            "title": "Caption",
+            "type": "string"
+          }
+        },
+        "required": [
+          "caption"
+        ],
+        "title": "CaptionUpdate",
+        "type": "object"
+      },
+      "CheckpointInfo": {
+        "properties": {
+          "preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Url"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "step": {
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "size_bytes",
+          "preview_url"
+        ],
+        "title": "CheckpointInfo",
+        "type": "object"
+      },
       "CreationList": {
         "properties": {
           "creations": {
@@ -183,6 +227,124 @@
           "models"
         ],
         "title": "CreationSummary",
+        "type": "object"
+      },
+      "DatasetCreate": {
+        "properties": {
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "trigger_word": {
+            "maxLength": 40,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9_\\-]+$",
+            "title": "Trigger Word",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "trigger_word"
+        ],
+        "title": "DatasetCreate",
+        "type": "object"
+      },
+      "DatasetImageSummary": {
+        "properties": {
+          "caption": {
+            "title": "Caption",
+            "type": "string"
+          },
+          "has_trigger": {
+            "title": "Has Trigger",
+            "type": "boolean"
+          },
+          "height": {
+            "title": "Height",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "thumb_url": {
+            "title": "Thumb Url",
+            "type": "string"
+          },
+          "width": {
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "width",
+          "height",
+          "caption",
+          "has_trigger",
+          "thumb_url"
+        ],
+        "title": "DatasetImageSummary",
+        "type": "object"
+      },
+      "DatasetList": {
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetSummary"
+            },
+            "title": "Datasets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "datasets"
+        ],
+        "title": "DatasetList",
+        "type": "object"
+      },
+      "DatasetSummary": {
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "image_count": {
+            "title": "Image Count",
+            "type": "integer"
+          },
+          "images": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetImageSummary"
+            },
+            "title": "Images",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "trigger_word": {
+            "title": "Trigger Word",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "trigger_word",
+          "image_count",
+          "created_at",
+          "images"
+        ],
+        "title": "DatasetSummary",
         "type": "object"
       },
       "FamilyInfo": {
@@ -750,6 +912,32 @@
         "title": "ProviderList",
         "type": "object"
       },
+      "PublishRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "step": {
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step"
+        ],
+        "title": "PublishRequest",
+        "type": "object"
+      },
       "ScanProblem": {
         "properties": {
           "reason": {
@@ -820,6 +1008,143 @@
           "problems"
         ],
         "title": "ScanResult",
+        "type": "object"
+      },
+      "TrainingList": {
+        "properties": {
+          "trainings": {
+            "items": {
+              "$ref": "#/components/schemas/TrainingSummary"
+            },
+            "title": "Trainings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "trainings"
+        ],
+        "title": "TrainingList",
+        "type": "object"
+      },
+      "TrainingRequest": {
+        "properties": {
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "epochs": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epochs"
+          },
+          "preset": {
+            "default": "fast",
+            "enum": [
+              "fast",
+              "balanced",
+              "quality"
+            ],
+            "title": "Preset",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_id"
+        ],
+        "title": "TrainingRequest",
+        "type": "object"
+      },
+      "TrainingSummary": {
+        "properties": {
+          "checkpoints": {
+            "items": {
+              "$ref": "#/components/schemas/CheckpointInfo"
+            },
+            "title": "Checkpoints",
+            "type": "array"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "dataset_id": {
+            "title": "Dataset Id",
+            "type": "string"
+          },
+          "dataset_name": {
+            "title": "Dataset Name",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "image_count": {
+            "title": "Image Count",
+            "type": "integer"
+          },
+          "preset": {
+            "title": "Preset",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "canceled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "steps": {
+            "title": "Steps",
+            "type": "integer"
+          },
+          "trigger_word": {
+            "title": "Trigger Word",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dataset_id",
+          "dataset_name",
+          "trigger_word",
+          "status",
+          "progress",
+          "error",
+          "preset",
+          "steps",
+          "image_count",
+          "created_at",
+          "checkpoints"
+        ],
+        "title": "TrainingSummary",
         "type": "object"
       },
       "UploadSummary": {
@@ -1163,6 +1488,336 @@
         "summary": "Creation Thumb",
         "tags": [
           "creations"
+        ]
+      }
+    },
+    "/v1/datasets": {
+      "get": {
+        "operationId": "list_datasets_v1_datasets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Datasets",
+        "tags": [
+          "training"
+        ]
+      },
+      "post": {
+        "operationId": "create_dataset_v1_datasets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasetCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Dataset",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/datasets/{dataset_id}": {
+      "delete": {
+        "operationId": "delete_dataset_v1_datasets__dataset_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Dataset",
+        "tags": [
+          "training"
+        ]
+      },
+      "get": {
+        "operationId": "get_dataset_v1_datasets__dataset_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Dataset",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/datasets/{dataset_id}/images": {
+      "post": {
+        "description": "The raw picture is the request body, re-encoded and stripped of metadata like any upload.\n\nIts caption starts as the trigger word.",
+        "operationId": "add_image_v1_datasets__dataset_id__images_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetImageSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Image",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/datasets/{dataset_id}/images/{image_id}": {
+      "delete": {
+        "operationId": "delete_image_v1_datasets__dataset_id__images__image_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "image_id",
+            "required": true,
+            "schema": {
+              "title": "Image Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Image",
+        "tags": [
+          "training"
+        ]
+      },
+      "patch": {
+        "operationId": "update_caption_v1_datasets__dataset_id__images__image_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "image_id",
+            "required": true,
+            "schema": {
+              "title": "Image Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptionUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetImageSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Caption",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/datasets/{dataset_id}/images/{image_id}/thumb": {
+      "get": {
+        "operationId": "image_thumb_v1_datasets__dataset_id__images__image_id__thumb_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dataset_id",
+            "required": true,
+            "schema": {
+              "title": "Dataset Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "image_id",
+            "required": true,
+            "schema": {
+              "title": "Image Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Image Thumb",
+        "tags": [
+          "training"
         ]
       }
     },
@@ -1554,6 +2209,239 @@
         "summary": "List Providers",
         "tags": [
           "providers"
+        ]
+      }
+    },
+    "/v1/trainings": {
+      "get": {
+        "operationId": "list_trainings_v1_trainings_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dataset_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dataset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Trainings",
+        "tags": [
+          "training"
+        ]
+      },
+      "post": {
+        "description": "Validate a dataset and queue a training job. GPU work is never awaited here.",
+        "operationId": "start_training_v1_trainings_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Training",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/trainings/{training_id}": {
+      "get": {
+        "operationId": "get_training_run_v1_trainings__training_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "training_id",
+            "required": true,
+            "schema": {
+              "title": "Training Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Training Run",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/trainings/{training_id}/checkpoints/{step}/preview": {
+      "get": {
+        "operationId": "checkpoint_preview_v1_trainings__training_id__checkpoints__step__preview_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "training_id",
+            "required": true,
+            "schema": {
+              "title": "Training Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "step",
+            "required": true,
+            "schema": {
+              "title": "Step",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Checkpoint Preview",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/trainings/{training_id}/publish": {
+      "post": {
+        "description": "Convert a checkpoint for ComfyUI, place it in the models folder, register it as ready.",
+        "operationId": "publish_checkpoint_v1_trainings__training_id__publish_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "training_id",
+            "required": true,
+            "schema": {
+              "title": "Training Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelVersionSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish Checkpoint",
+        "tags": [
+          "training"
         ]
       }
     },

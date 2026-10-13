@@ -1,0 +1,20 @@
+# Training presets per base family (docs/spikes/training/README.md has the measurements behind them).
+# total steps = images x epochs (batch size 1). On the dev Mac a step takes about 7-8 s.
+families:
+  flux2-klein:
+    engine: mflux
+    model: flux2-klein-base-4b       # training needs the BASE model; it is not the distilled one used to generate
+    min_images: 5
+    max_images: 100
+    seconds_per_step: 7.5
+    defaults:
+      quantize: 8
+      gradient_checkpointing: true
+      max_resolution: 768
+      rank: 16
+      learning_rate: 1.0e-4
+      blocks: { double: 5, single: 20 }   # klein 4B has 5 double and 20 single blocks
+    presets:
+      fast:     { epochs: 20 }
+      balanced: { epochs: 60 }
+      quality:  { epochs: 100 }

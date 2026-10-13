@@ -24,8 +24,13 @@ Status: first generation slice.
 - **Jobs:** `/jobs` lists your jobs with cancel (queued: at once; running: interrupts ComfyUI, within about a
   second) and retry. **Pictures:** upload (PNG/JPEG/WebP, 10 MB, re-encoded without metadata, 24 MP cap, 60 per
   hour) and use it for *From a picture*; the upload is deleted after the job and unused ones after 24 hours.
-- Not yet: training (spike prepared: `docs/spikes/training/`), a real trained or downloaded klein LoRA (the LoRA
-  path was verified with a synthetic one, `docs/spikes/lora/`), multi-picture tools. Design: [docs/DESIGN.md](docs/DESIGN.md).
+- **Training:** `/train` makes a dataset (pictures + captions + a trigger word), trains a klein LoRA with
+  mflux on this Mac (presets fast / balanced / quality, progress, cancel), shows checkpoint previews and
+  publishes a chosen step into the models folder as a `ready` LoRA that Create can use at once.
+  `TRAINER_MODE=stub` simulates a run without a GPU; `real` needs the mflux install (`MFLUX_BIN`).
+  Verified end to end on the dev Mac: 15 pictures, 60 steps, publish, generate with the LoRA.
+- Not yet: a tuned longer run where the trigger word clearly binds, multi-picture tools, prompt
+  enhance. Design: [docs/DESIGN.md](docs/DESIGN.md).
 
 ```bash
 make setup     # uv + pnpm dependencies

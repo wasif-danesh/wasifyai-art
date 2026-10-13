@@ -32,6 +32,7 @@ def client(store: InMemoryModelStore) -> TestClient:
 from wasifyai_art_api.bus import InMemoryBus  # noqa: E402
 from wasifyai_art_api.jobs import InMemoryJobStore  # noqa: E402
 from wasifyai_art_api.storage import InMemoryStorage  # noqa: E402
+from wasifyai_art_api.training import InMemoryTrainingStore  # noqa: E402
 from wasifyai_art_api.uploads import InMemoryUploadStore  # noqa: E402
 
 from tests.helpers import write_safetensors  # noqa: E402
@@ -58,6 +59,7 @@ def parts(tmp_path: Path):
         "bus": InMemoryBus(),
         "storage": InMemoryStorage(),
         "uploads": InMemoryUploadStore(),
+        "training": InMemoryTrainingStore(),
     }
 
 
@@ -71,5 +73,6 @@ def gen_client(parts) -> TestClient:
             parts["bus"],
             parts["storage"],
             parts["uploads"],
+            training=parts["training"],
         )
     )

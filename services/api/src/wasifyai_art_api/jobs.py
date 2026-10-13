@@ -46,7 +46,7 @@ class CreationRecord:
 
 class JobStore(Protocol):
     async def create_job(
-        self, tenant_id: str, owner_id: str, request: dict[str, Any]
+        self, tenant_id: str, owner_id: str, request: dict[str, Any], kind: str = "generate"
     ) -> JobRecord: ...
 
     async def get_job(self, tenant_id: str, owner_id: str, job_id: str) -> JobRecord | None: ...
@@ -96,7 +96,9 @@ class InMemoryJobStore:
         self.jobs: dict[str, tuple[str, JobRecord]] = {}
         self.creations: list[tuple[str, str, CreationRecord]] = []
 
-    async def create_job(self, tenant_id: str, owner_id: str, request: dict[str, Any]) -> JobRecord:
+    async def create_job(
+        self, tenant_id: str, owner_id: str, request: dict[str, Any], kind: str = "generate"
+    ) -> JobRecord:
         rec = JobRecord(str(uuid4()), tenant_id, owner_id, "queued", request, created_at=_now())
         self.jobs[rec.id] = (tenant_id, rec)
         return rec
@@ -199,17 +201,25 @@ class PostgresJobStore:
     def __init__(self, engine: AsyncEngine):
         self._engine = engine
 
-    async def create_job(self, tenant_id: str, owner_id: str, request: dict[str, Any]) -> JobRecord:
+    async def create_job(
+        self, tenant_id: str, owner_id: str, request: dict[str, Any], kind: str = "generate"
+    ) -> JobRecord:
         async with self._engine.begin() as conn:
             row = (
                 await conn.execute(
                     text(
                         f"""
-                        INSERT INTO jobs (tenant_id, product_id, owner_id, request)
-                        VALUES (:t, :p, :o, CAST(:r AS jsonb)) RETURNING {_JOB_COLS}
+                        INSERT INTO jobs (tenant_id, product_id, owner_id, kind, request)
+                        VALUES (:t, :p, :o, :k, CAST(:r AS jsonb)) RETURNING {_JOB_COLS}
                         """
                     ),
-                    {"t": tenant_id, "p": PRODUCT_ID, "o": owner_id, "r": json.dumps(request)},
+                    {
+                        "t": tenant_id,
+                        "p": PRODUCT_ID,
+                        "o": owner_id,
+                        "k": kind,
+                        "r": json.dumps(request),
+                    },
                 )
             ).one()
         return _job(row)

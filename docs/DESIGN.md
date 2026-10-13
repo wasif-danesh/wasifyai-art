@@ -128,6 +128,13 @@ Wizard: **Images → Captions → Settings → Train → Results/Publish.**
   (`convert_mflux_lora.py`, to live in the trainer). Dataset layouts cover both "Image model" and "Edit image".
   Not yet shown: that the trigger word binds (needs a longer, tuned run). Download: use `HF_HUB_DISABLE_XET=1` on
   slow links. Details and pictures: `docs/spikes/training/README.md`.
+- **Built (2026-10-13):** `routes_training.py` (datasets, images, runs, checkpoints, publish), `trainer.py`
+  (`MfluxTrainer` subprocess, `StubTrainer`), `lora_convert.py` (header-only rename, no torch), worker path for
+  `kind=train` (GPU lock, cancel, progress from tqdm), `config/training.yaml` (family presets and defaults),
+  web `/train`. Steps = images × epochs; checkpoints are saved about four times per run and appear when the
+  run ends (the final step has no preview). Publish writes `{MODELS_DIR}/loras/{slug}-step{N}.safetensors`,
+  scans it into the registry as family `flux2-klein` with the trigger word, and ComfyUI lists it without a
+  restart. Verified on the real stack: 15 pictures × 4 epochs = 60 steps trained in about 15 minutes.
 
 ---
 

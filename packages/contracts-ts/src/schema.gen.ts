@@ -93,6 +93,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/datasets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Datasets */
+        get: operations["list_datasets_v1_datasets_get"];
+        put?: never;
+        /** Create Dataset */
+        post: operations["create_dataset_v1_datasets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/datasets/{dataset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Dataset */
+        get: operations["get_dataset_v1_datasets__dataset_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Dataset */
+        delete: operations["delete_dataset_v1_datasets__dataset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/datasets/{dataset_id}/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Image
+         * @description The raw picture is the request body, re-encoded and stripped of metadata like any upload.
+         *
+         *     Its caption starts as the trigger word.
+         */
+        post: operations["add_image_v1_datasets__dataset_id__images_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/datasets/{dataset_id}/images/{image_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Image */
+        delete: operations["delete_image_v1_datasets__dataset_id__images__image_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Caption */
+        patch: operations["update_caption_v1_datasets__dataset_id__images__image_id__patch"];
+        trace?: never;
+    };
+    "/v1/datasets/{dataset_id}/images/{image_id}/thumb": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Image Thumb */
+        get: operations["image_thumb_v1_datasets__dataset_id__images__image_id__thumb_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/families": {
         parameters: {
             query?: never;
@@ -295,6 +388,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/trainings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Trainings */
+        get: operations["list_trainings_v1_trainings_get"];
+        put?: never;
+        /**
+         * Start Training
+         * @description Validate a dataset and queue a training job. GPU work is never awaited here.
+         */
+        post: operations["start_training_v1_trainings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/trainings/{training_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Training Run */
+        get: operations["get_training_run_v1_trainings__training_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/trainings/{training_id}/checkpoints/{step}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Checkpoint Preview */
+        get: operations["checkpoint_preview_v1_trainings__training_id__checkpoints__step__preview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/trainings/{training_id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publish Checkpoint
+         * @description Convert a checkpoint for ComfyUI, place it in the models folder, register it as ready.
+         */
+        post: operations["publish_checkpoint_v1_trainings__training_id__publish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/uploads/images": {
         parameters: {
             query?: never;
@@ -339,6 +507,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** CaptionUpdate */
+        CaptionUpdate: {
+            /** Caption */
+            caption: string;
+        };
+        /** CheckpointInfo */
+        CheckpointInfo: {
+            /** Preview Url */
+            preview_url: string | null;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Step */
+            step: number;
+        };
         /** CreationList */
         CreationList: {
             /** Creations */
@@ -391,6 +573,48 @@ export interface components {
             thumb_url: string;
             /** Width */
             width: number;
+        };
+        /** DatasetCreate */
+        DatasetCreate: {
+            /** Name */
+            name: string;
+            /** Trigger Word */
+            trigger_word: string;
+        };
+        /** DatasetImageSummary */
+        DatasetImageSummary: {
+            /** Caption */
+            caption: string;
+            /** Has Trigger */
+            has_trigger: boolean;
+            /** Height */
+            height: number;
+            /** Id */
+            id: string;
+            /** Thumb Url */
+            thumb_url: string;
+            /** Width */
+            width: number;
+        };
+        /** DatasetList */
+        DatasetList: {
+            /** Datasets */
+            datasets: components["schemas"]["DatasetSummary"][];
+        };
+        /** DatasetSummary */
+        DatasetSummary: {
+            /** Created At */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Image Count */
+            image_count: number;
+            /** Images */
+            images: components["schemas"]["DatasetImageSummary"][];
+            /** Name */
+            name: string;
+            /** Trigger Word */
+            trigger_word: string;
         };
         /** FamilyInfo */
         FamilyInfo: {
@@ -620,6 +844,13 @@ export interface components {
             /** Providers */
             providers: components["schemas"]["ProviderInfo"][];
         };
+        /** PublishRequest */
+        PublishRequest: {
+            /** Name */
+            name?: string | null;
+            /** Step */
+            step: number;
+        };
         /** ScanProblem */
         ScanProblem: {
             /** Reason */
@@ -658,6 +889,54 @@ export interface components {
              * @default 0
              */
             updated: number;
+        };
+        /** TrainingList */
+        TrainingList: {
+            /** Trainings */
+            trainings: components["schemas"]["TrainingSummary"][];
+        };
+        /** TrainingRequest */
+        TrainingRequest: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Epochs */
+            epochs?: number | null;
+            /**
+             * Preset
+             * @default fast
+             * @enum {string}
+             */
+            preset: "fast" | "balanced" | "quality";
+        };
+        /** TrainingSummary */
+        TrainingSummary: {
+            /** Checkpoints */
+            checkpoints: components["schemas"]["CheckpointInfo"][];
+            /** Created At */
+            created_at: string;
+            /** Dataset Id */
+            dataset_id: string;
+            /** Dataset Name */
+            dataset_name: string;
+            /** Error */
+            error: string | null;
+            /** Id */
+            id: string;
+            /** Image Count */
+            image_count: number;
+            /** Preset */
+            preset: string;
+            /** Progress */
+            progress: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "succeeded" | "failed" | "canceled";
+            /** Steps */
+            steps: number;
+            /** Trigger Word */
+            trigger_word: string;
         };
         /** UploadSummary */
         UploadSummary: {
@@ -852,6 +1131,248 @@ export interface operations {
             header?: never;
             path: {
                 creation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_datasets_v1_datasets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetList"];
+                };
+            };
+        };
+    };
+    create_dataset_v1_datasets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DatasetCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dataset_v1_datasets__dataset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_dataset_v1_datasets__dataset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_image_v1_datasets__dataset_id__images_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetImageSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_image_v1_datasets__dataset_id__images__image_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_caption_v1_datasets__dataset_id__images__image_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+                image_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaptionUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetImageSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    image_thumb_v1_datasets__dataset_id__images__image_id__thumb_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+                image_id: string;
             };
             cookie?: never;
         };
@@ -1176,6 +1697,168 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProviderList"];
+                };
+            };
+        };
+    };
+    list_trainings_v1_trainings_get: {
+        parameters: {
+            query?: {
+                dataset_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_training_v1_trainings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TrainingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_training_run_v1_trainings__training_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                training_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrainingSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    checkpoint_preview_v1_trainings__training_id__checkpoints__step__preview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                training_id: string;
+                step: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    publish_checkpoint_v1_trainings__training_id__publish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                training_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PublishRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelVersionSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

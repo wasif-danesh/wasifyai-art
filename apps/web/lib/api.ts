@@ -2,6 +2,7 @@
 // environment, never a hard-coded host.
 import type {
   CreationSummary,
+  DatasetSummary,
   FamilyInfo,
   ModelSummary,
   ProviderInfo,
@@ -38,4 +39,17 @@ export async function getCreation(id: string): Promise<CreationSummary | null> {
   if (r.status === 404) return null;
   if (!r.ok) throw new Error(`API creation answered ${r.status}`);
   return (await r.json()) as CreationSummary;
+}
+
+export async function listDatasets(): Promise<DatasetSummary[]> {
+  return (await get<{ datasets: DatasetSummary[] }>("/v1/datasets")).datasets;
+}
+
+export async function getDataset(id: string): Promise<DatasetSummary | null> {
+  const r = await fetch(`${apiBase()}/v1/datasets/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`API dataset answered ${r.status}`);
+  return (await r.json()) as DatasetSummary;
 }

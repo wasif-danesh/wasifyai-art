@@ -24,11 +24,32 @@ from wasifyai_art_api.jobs import CreationRecord, JobStore, PostgresJobStore
 from wasifyai_art_api.runners import ComfyRunner, Runner, StubRunner
 from wasifyai_art_api.settings import Settings, get_settings
 from wasifyai_art_api.storage import Storage, make_storage
+from wasifyai_art_api.trainer import (
+    MfluxTrainer,
+    StubTrainer,
+    Trainer,
+    TrainImage,
+    caption_with_trigger,
+)
+from wasifyai_art_api.training import PostgresTrainingStore, TrainingStore
 from wasifyai_art_api.uploads import PostgresUploadStore, UploadStore, release
 from wasifyai_art_api.workflows import WorkflowRegistry
 
 log = logging.getLogger("wasifyai_art_worker")
 PROGRESS_STEP = 0.05
+
+
+def _to_jpeg(png: bytes) -> bytes:
+    import io  # noqa: PLC0415
+
+    from PIL import Image  # noqa: PLC0415
+
+    with Image.open(io.BytesIO(png)) as im:
+        rgb = im.convert("RGB")
+    rgb.thumbnail((512, 512))
+    out = io.BytesIO()
+    rgb.save(out, "JPEG", quality=84)
+    return out.getvalue()
 
 
 class GpuLock(Protocol):
@@ -77,22 +98,97 @@ class JobProcessor:
     def __init__(
         self, jobs: JobStore, storage: Storage, bus: EventBus, runner: Runner, lock: GpuLock,
         timeout_s: float = 1200.0, uploads: UploadStore | None = None,
+        trainer: Trainer | None = None, training: TrainingStore | None = None,
+        train_timeout_s: float = 14400.0,
     ):  # fmt: skip
         self.jobs, self.storage, self.bus = jobs, storage, bus
         self.runner, self.lock, self.timeout_s = runner, lock, timeout_s
         self.uploads = uploads
+        self.trainer, self.training, self.train_timeout_s = trainer, training, train_timeout_s
 
     async def _fail(self, job_id: str, message: str, gpu_seconds: float = 0.0) -> None:
         await self.jobs.finish_job(job_id, "failed", message, None, gpu_seconds)
         await self.bus.publish(job_id, "failed", {"message": message})
 
-    async def _watch_cancel(self, job_id: str) -> None:
+    async def _watch_cancel(self, job_id: str, cancel: Any = None) -> None:
         """While the job runs, ask the provider to stop as soon as a cancel is requested."""
+        stop = cancel or self.runner.cancel
         while True:
             await asyncio.sleep(0.5)
             if await self.bus.cancel_requested(job_id):
-                await self.runner.cancel(job_id)
+                await stop(job_id)
                 return
+
+    async def _run_training(self, rec: Any, on_progress: Any) -> None:
+        """A training job: dataset images and captions in, checkpoints (adapters + previews) out."""
+        job_id = rec.id
+        started = time.monotonic()
+        watcher: asyncio.Task[None] | None = None
+        try:
+            if self.trainer is None or self.training is None:
+                raise ComfyError("trainer_missing", "Training is not set up on this worker.")
+            images = await self._training_images(rec)
+            async with self.lock.hold():
+                if await self.bus.cancel_requested(job_id):
+                    raise ComfyError("interrupted", "canceled before it started")
+                started = time.monotonic()
+                watcher = asyncio.create_task(self._watch_cancel(job_id, self.trainer.cancel))
+                async with asyncio.timeout(self.train_timeout_s):
+                    raw = await self.trainer.train(rec.request, job_id, images, on_progress)
+            elapsed = time.monotonic() - started
+            stored = []
+            for cp in raw:
+                base = f"trainings/{job_id}/step-{cp.step}"
+                await self.storage.put(
+                    rec.tenant_id, rec.owner_id, f"{base}.safetensors", cp.adapter
+                )
+                preview_key = None
+                if cp.preview_png:
+                    jpg = await asyncio.to_thread(_to_jpeg, cp.preview_png)
+                    preview_key = f"{base}.jpg"
+                    await self.storage.put(rec.tenant_id, rec.owner_id, preview_key, jpg)
+                stored.append(
+                    {
+                        "step": cp.step, "adapter_key": f"{base}.safetensors",
+                        "preview_key": preview_key, "size_bytes": len(cp.adapter),
+                    }
+                )  # fmt: skip
+            await self.training.set_checkpoints(job_id, stored)
+        except ComfyError as e:
+            if e.code == "interrupted" and await self.bus.cancel_requested(job_id):
+                await self.jobs.finish_job(job_id, "canceled", None, None, 0.0)
+                await self.bus.publish(job_id, "canceled", {})
+                return
+            await self._fail(job_id, e.message, time.monotonic() - started)
+            return
+        except TimeoutError:
+            await self._fail(job_id, "The training took too long.", time.monotonic() - started)
+            return
+        except Exception:
+            log.exception("training %s failed unexpectedly", job_id)
+            await self._fail(job_id, "The training failed.", time.monotonic() - started)
+            return
+        finally:
+            if watcher is not None:
+                watcher.cancel()
+        await self.jobs.finish_job(job_id, "succeeded", None, None, round(elapsed, 2))
+        await self.bus.publish(job_id, "succeeded", {"training_id": job_id})
+
+    async def _training_images(self, rec: Any) -> list[TrainImage]:
+        assert self.training is not None
+        dataset_id = rec.request["dataset_id"]
+        trigger = rec.request["trigger_word"]
+        rows = await self.training.list_images(dataset_id)
+        if not rows:
+            raise ComfyError("invalid_input", "The dataset has no pictures.")
+        out = []
+        for i, row in enumerate(rows, 1):
+            try:
+                png = await self.storage.get(rec.tenant_id, rec.owner_id, row.key)
+            except FileNotFoundError:
+                raise ComfyError("invalid_input", "A picture of the dataset is missing.") from None
+            out.append(TrainImage(f"{i:03d}", png, caption_with_trigger(row.caption, trigger)))
+        return out
 
     async def process(self, job_id: str) -> None:
         try:
@@ -134,6 +230,9 @@ class JobProcessor:
                 await self.jobs.set_progress(job_id, round(p, 3))
                 await self.bus.publish(job_id, "progress", {"progress": round(p, 3)})
 
+        if rec.request.get("kind") == "train":
+            await self._run_training(rec, on_progress)
+            return
         started = time.monotonic()
         inputs: dict[str, bytes] = {}
         if key := rec.request.get("source_key"):
@@ -249,9 +348,14 @@ async def run_worker(settings: Settings) -> None:
         if settings.comfyui_mode == "real"
         else StubRunner()
     )
+    trainer: Trainer = (
+        MfluxTrainer(settings.mflux_bin) if settings.trainer_mode == "real" else StubTrainer()
+    )
     proc = JobProcessor(
         PostgresJobStore(engine), make_storage(settings), bus, runner,
         RedisGpuLock(redis, settings.gpu_id), settings.job_timeout_s, PostgresUploadStore(engine),
+        trainer=trainer, training=PostgresTrainingStore(engine),
+        train_timeout_s=settings.train_timeout_s,
     )  # fmt: skip
     consumer = f"{socket.gethostname()}-{os.getpid()}"
     log.info("worker %s ready (mode=%s, gpu=%s)", consumer, settings.comfyui_mode, settings.gpu_id)

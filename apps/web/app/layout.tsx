@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Link href="/create">Create</Link>
             <Link href="/jobs">Jobs</Link>
             <Link href="/models">Models</Link>
-            <span>Training</span>
+            <Link href="/train">Train</Link>
           </nav>
         </header>
         <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
