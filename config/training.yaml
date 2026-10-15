@@ -14,6 +14,9 @@ families:
       rank: 16
       learning_rate: 1.0e-4
       blocks: { double: 5, single: 20 }   # klein 4B has 5 double and 20 single blocks
+      timestep_low: 0                     # 0..40 of the 40-step schedule: never train on low noise only
+      timestep_high: 40
+      timestep_type: sigmoid              # mid-noise weighted (ai-toolkit's default, best for identity)
     presets:
       fast:     { epochs: 20 }
       balanced: { epochs: 60 }

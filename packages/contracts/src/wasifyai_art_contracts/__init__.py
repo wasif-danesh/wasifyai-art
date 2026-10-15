@@ -239,6 +239,7 @@ class TrainingRequest(BaseModel):
     dataset_id: str
     preset: TrainingPreset = "fast"
     epochs: int | None = Field(default=None, ge=1, le=300)
+    rank: int | None = Field(default=None, ge=4, le=128)
 
 
 class CheckpointInfo(Out):

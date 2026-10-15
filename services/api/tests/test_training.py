@@ -108,6 +108,13 @@ def test_config_matches_the_measured_klein_layout() -> None:
     assert ends == {"transformer_blocks": 5, "single_transformer_blocks": 20}
     assert len(cfg["lora_layers"]["targets"]) == 14
     assert cfg["training_loop"]["num_epochs"] == 20 and cfg["checkpoint"]["save_frequency"] == 100
+    # Subject and composition are decided at high noise, so the full range is trained.
+    loop = cfg["training_loop"]
+    assert (loop["timestep_low"], loop["timestep_high"], loop["timestep_type"]) == (
+        0,
+        40,
+        "sigmoid",
+    )
 
 
 # ---- datasets -----------------------------------------------------------------------------------
@@ -310,3 +317,12 @@ async def test_publish_refusals(gen_client: TestClient, parts) -> None:
 
 def test_checkpoint_json_roundtrip_is_plain() -> None:
     json.dumps([{"step": 1, "adapter_key": "a", "preview_key": None, "size_bytes": 1}])
+
+
+def test_rank_override_and_checkpoint_spacing(gen_client: TestClient, parts) -> None:
+    ds = make_dataset(gen_client, 5)
+    t = start(gen_client, ds, epochs=60, rank=64).json()  # 300 steps
+    job = parts["jobs"].jobs[t["id"]][1]
+    assert job.request["params"]["rank"] == 64
+    assert job.request["save_every"] == 50  # about six checkpoints per run
+    assert start(gen_client, ds, rank=2).status_code == 422

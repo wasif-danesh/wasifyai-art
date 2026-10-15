@@ -296,8 +296,10 @@ async def start_training(
     preset = fam.presets[body.preset]
     epochs = body.epochs or int(preset["epochs"])
     steps = len(images) * epochs
-    save_every = max(25, round(steps / 4 / 25) * 25)
+    save_every = max(25, round(steps / 6 / 25) * 25)
     params = {**fam.defaults, "steps": steps}
+    if body.rank:
+        params["rank"] = body.rank
     request = {
         "kind": "train", "dataset_id": d.id, "name": d.name, "trigger_word": d.trigger_word,
         "family": FAMILY, "engine": fam.engine, "model": fam.model, "preset": body.preset,

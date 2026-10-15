@@ -907,6 +907,8 @@ export interface components {
              * @enum {string}
              */
             preset: "fast" | "balanced" | "quality";
+            /** Rank */
+            rank?: number | null;
         };
         /** TrainingSummary */
         TrainingSummary: {

@@ -106,8 +106,10 @@ def build_config(request: dict[str, Any], data_dir: Path, out_dir: Path) -> dict
         "training_loop": {
             "num_epochs": request["epochs"],
             "batch_size": 1,
-            "timestep_low": 25,
-            "timestep_high": 40,
+            # The whole noise range: composition and subject are decided at high noise.
+            "timestep_low": p.get("timestep_low", 0),
+            "timestep_high": p.get("timestep_high", 40),
+            "timestep_type": p.get("timestep_type", "sigmoid"),
         },
         "optimizer": {"name": "AdamW", "learning_rate": p["learning_rate"]},
         "checkpoint": {"output_path": str(out_dir), "save_frequency": request["save_every"]},

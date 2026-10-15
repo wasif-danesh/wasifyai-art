@@ -1054,6 +1054,19 @@
             ],
             "title": "Preset",
             "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "maximum": 128.0,
+                "minimum": 4.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
           }
         },
         "required": [
